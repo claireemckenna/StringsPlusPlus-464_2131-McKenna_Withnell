@@ -8,32 +8,26 @@ import string
 import re
 from IPy import IP
 import tldextract
+import argparse
 
 #define input file as ifile
 ifile= [ ]
 
-#get total number of arguments
-total = len(sys.argv)
+#Use argparse module to handle all command line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", help="The file you want to run Strings++ against")
+parser.add_argument("-d","--directory", help="Parse all files in a directory", action="store_true")
+args = parser.parse_args()
 
-#test for incorrect usage, exit
-if total < 2:
-       	print ("Usage: %s filename [-d for directory]" % sys.argv[0])
-       	sys.exit(2)
-
-if total > 2:
-	if sys.argv[2] == "-d":
-		#collect files
-		directory = sys.argv[1]
-		path = r"%s" % directory
-		for file in os.listdir(path):
-			current_file = os.path.join(path, file)
-			ifile.append(current_file) 
-	else:
-		print ("Usage: %s filename [-d for directory]" % sys.argv[0])
-		sys.exit(2)
-if total == 2:	
-	#define input file
-	ifile.append(sys.argv[1])
+if args.directory:
+	directory = args.filename
+	path = r"%s" % directory
+	for file in os.listdir(path):
+		current_file = os.path.join(path, file)
+		ifile.append(current_file)
+		
+if not(args.directory):
+	ifile.append(args.filename)
 
 #Function to extract readable ascii strings with greater than four characters from a file
 def strings(filename, min=4):
